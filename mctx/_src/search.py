@@ -163,7 +163,7 @@ def simulate(
     is_before_depth_cutoff = depth < max_depth
     is_visited = next_node_index != Tree.UNVISITED
     is_continuing = jnp.logical_and(is_visited, is_before_depth_cutoff)
-    return _SimulationState(  # pytype: disable=wrong-arg-types  # jax-types
+    return _SimulationState(
         rng_key=rng_key,
         node_index=node_index,
         action=action,  # pyrefly: ignore[bad-argument-type]
@@ -173,20 +173,18 @@ def simulate(
 
   node_index = jnp.array(Tree.ROOT_INDEX, dtype=jnp.int32)
   depth = jnp.zeros((), dtype=tree.children_prior_logits.dtype)
-  # pytype: disable=wrong-arg-types  # jnp-type
   initial_state = _SimulationState(
       rng_key=rng_key,
       node_index=tree.NO_PARENT,
       action=tree.NO_PARENT,
-      next_node_index=node_index,
-      depth=depth,
-      is_continuing=jnp.array(True))
-  # pytype: enable=wrong-arg-types
+      next_node_index=node_index,  # pyrefly: ignore[bad-argument-type]
+      depth=depth,  # pyrefly: ignore[bad-argument-type]
+      is_continuing=jnp.array(True))  # pyrefly: ignore[bad-argument-type]
   end_state = jax.lax.while_loop(cond_fun, body_fun, initial_state)
 
   # Returning a node with a selected action.
   # The action can be already visited, if the max_depth is reached.
-  return end_state.node_index, end_state.action
+  return end_state.node_index, end_state.action  # pyrefly: ignore[bad-return]
 
 
 def expand(
